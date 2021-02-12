@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>WordsCounter</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<h1>Spring Boot</h1>
+
+<h4>Ajax submit:</h4>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<form id="my_form">
+    <input type="file" name="files" id="files" accept=".txt" multiple="multiple" /><br/><br/>
+    <button type="button" name="submit_1" id="submit_1">submit</button>
+</form>
+
+<span id="result">
+</span>
+
+
+
+<script>
+
+    $('#submit_1').on('click', function() {
+        let data = new FormData($("#my_form")[0]);
+
+        $.ajax({
+            url: '/uploadFiles',
+            type: 'POST',
+            data: data,
+            dataType:'json',
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                table =  document.createElement('table')
+                table.setAttribute("id", "resultTable")
+                var row_width = 40;
+
+                var A_G = "";
+                var H_N = "";
+                var O_U = "";
+                var V_Z = "";
+                A_G += "Words" + new Array(row_width + 1).join(" ") + "Count\n";
+                H_N += "Words" + new Array(row_width + 1).join(" ") + "Count\n";
+                O_U += "Words" + new Array(row_width + 1).join(" ") + "Count\n";
+                V_Z += "Words" + new Array(row_width + 1).join(" ") + "Count\n";
+                data.forEach(e=>{
+                    tr = document.createElement('tr')
+                    td = document.createElement('td')
+                    td.textContent = e.key
+                    tr.append(td)
+                    td = document.createElement("td")
+                    td.textContent = e.value
+                    tr.append(td)
+                    table.append(tr)
+                    if((e.key.charCodeAt(0) >= 'a'.charCodeAt(0))&&(e.key.charCodeAt(0) < 'h'.charCodeAt(0))){
+                        A_G += e.key + new Array(row_width - e.key.length + 9).join(" ");
+                        A_G += e.value;
+                        A_G += "\n";
+                    }else if((e.key.charCodeAt(0) >= 'h'.charCodeAt(0))&&(e.key.charCodeAt(0) < 'o'.charCodeAt(0))){
+                        H_N += e.key + new Array(row_width - e.key.length + 9).join(" ");
+                        H_N += e.value;
+                        H_N += "\n";
+                    }else if((e.key.charCodeAt(0) >= 'o'.charCodeAt(0))&&(e.key.charCodeAt(0) < 'v'.charCodeAt(0))){
+                        O_U += e.key + new Array(row_width - e.key.length + 9).join(" ");
+                        O_U += e.value;
+                        O_U += "\n";
+                    }else if((e.key.charCodeAt(0) >= 'v'.charCodeAt(0))&&(e.key.charCodeAt(0) <= 'z'.charCodeAt(0))){
+                        V_Z += e.key + new Array(row_width - e.key.length + 9).join(" ");
+                        V_Z += e.value;
+                        V_Z += "\n";
+                    }
+
+                })
+                var hiddenElement = document.createElement('a');
+
+                hiddenElement.href = 'data:attachment/text,' + encodeURI(A_G)
+                hiddenElement.target = '_blank'
+                hiddenElement.download = 'A_G.txt'
+                hiddenElement.click()
+
+                hiddenElement.href = 'data:attachment/text,' + encodeURI(H_N)
+                hiddenElement.download = 'H_N.txt'
+                hiddenElement.click()
+
+                hiddenElement.href = 'data:attachment/text,' + encodeURI(O_U)
+                hiddenElement.download = 'O_U.txt'
+                hiddenElement.click()
+
+                hiddenElement.href = 'data:attachment/text,' + encodeURI(V_Z)
+                hiddenElement.download = 'V_Z.txt'
+                hiddenElement.click()
+
+                $('#resultTable').remove()
+                $('#result').append(table)
+
+            },
+            error: function(r) {
+                console.log('error', r);
+            }
+        });
+    });
+</script>
+<hr/>
+
+</body>
+</html>
